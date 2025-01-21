@@ -619,3 +619,89 @@
     </statement>
   </block>
 </xml>
+# Configuration
+SYMBOL = "LDP"  # Replace with correct symbol if LDP is not valid
+INITIAL_TRADE_AMOUNT = 0.35 USD
+TAKE_PROFIT_THRESHOLD = 20%  # Example: 20% profit to trigger take profit
+READ_AHEAD_THRESHOLD = 3  # Example: Looking at changes in the last digit
+
+# Initialization
+balance = 100 USD  # Starting balance, adjust as necessary
+lastDigit = null
+inTrade = false
+
+# Main Loop (Continuously runs, assuming API integration for real-time data)
+while true:
+    # Fetch Current Price of SYMBOL
+    currentPrice = fetchCurrentPrice(SYMBOL)
+    
+    # Extract Last Digit of Current Price (for simplicity, assuming whole number prices)
+    currentLastDigit = getLastDigit(currentPrice)
+    
+    # Check for New Trade Opportunity (if not already in a trade)
+    if!inTrade and lastDigit!= null:
+        # Predict Next Digit (Simplified Example: if current digit is even, predict odd next, and vice versa)
+        predictedNextDigitParity = predictNextDigitParity(currentLastDigit)
+        
+        # Execute Trade
+        if predictedNextDigitParity!= getParity(currentLastDigit):
+            tradeDirection = "Higher" if predictedNextDigitParity == "Odd" else "Lower"
+            executeTrade(SYMBOL, tradeDirection, INITIAL_TRADE_AMOUNT)
+            inTrade = true
+            
+    # Check for Take Profit Condition (Simplified: checking balance increase)
+    if inTrade and (balance * TAKE_PROFIT_THRESHOLD / 100) <= getNewBalance() - balance:
+        # Freeze System and Take Profit
+        freezeSystem()
+        takeProfit()
+        inTrade = false
+        balance = getNewBalance()  # Update balance after taking profit
+        
+    # Update Last Digit for Next Iteration
+    lastDigit = currentLastDigit
+    
+    # Optional: Digit Differ Log for Analysis
+    logDigitDiffer(lastDigit, currentLastDigit)
+
+# Functions (Simplified, actual implementation would vary based on the programming language and platform API)
+
+function fetchCurrentPrice(symbol):
+    # API Call to fetch current price
+    return currentPrice
+
+function getLastDigit(price):
+    # Extract last digit
+    return price % 10
+
+function predictNextDigitParity(currentDigit):
+    # Simplified prediction logic
+    if currentDigit % 2 == 0:
+        return "Odd"
+    else:
+        return "Even"
+
+function getParity(digit):
+    if digit % 2 == 0:
+        return "Even"
+    else:
+        return "Odd"
+
+function executeTrade(symbol, direction, amount):
+    # API Call to execute trade
+    print("Executing trade on", symbol, "prediction:", direction)
+
+function freezeSystem():
+    # Logic to freeze the system
+    print("System Frozen. Taking Profit.")
+
+function takeProfit():
+    # API Call to close the trade and take profit
+    print("Profit Taken.")
+
+function getNewBalance():
+    # API Call to fetch updated balance
+    return newBalance
+
+function logDigitDiffer(oldDigit, newDigit):
+    # Logging for analysis
+    print("Digit Change from", oldDigit, "to", newDigit)
